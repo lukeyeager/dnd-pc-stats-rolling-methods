@@ -14,17 +14,17 @@ fn list_outputs_all_methods() {
 
     let expected = [
         "stdarr",
-        "3d6",
         "4d6",
-        "roll3_reroll_under8",
-        "roll3_reroll_1s",
-        "roll3_1s_are_6s",
-        "roll18",
-        "roll24",
-        "3up3down",
+        "3d6",
         "tictactoe",
         "6x6gridMax",
         "6x6gridTotal",
+        "3d6_reroll_under8",
+        "3d6_reroll_1s",
+        "3d6_1s_are_6s",
+        "roll18",
+        "roll24",
+        "3up3down",
     ];
 
     assert_eq!(lines, expected, "list output doesn't match METHOD_NAMES");
@@ -36,9 +36,9 @@ fn once_succeeds_for_each_method() {
         "stdarr",
         "3d6",
         "4d6",
-        "roll3_reroll_under8",
-        "roll3_reroll_1s",
-        "roll3_1s_are_6s",
+        "3d6_reroll_under8",
+        "3d6_reroll_1s",
+        "3d6_1s_are_6s",
         "roll18",
         "roll24",
         "3up3down",
