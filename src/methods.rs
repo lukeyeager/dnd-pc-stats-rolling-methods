@@ -74,8 +74,12 @@ pub fn roll_many_sort<const N: usize>(rng: &mut impl Rng) -> [u32; 6] {
     std::array::from_fn(|i| top18[i * 3..i * 3 + 3].iter().sum())
 }
 
-/// Each stat pair is generated from a single die roll: one stat goes up, one goes down.
-/// Uses a d6, d8, and d10 to produce three balanced pairs.
+/// Roll a d6, d8, and d10; each die produces one high stat and one low stat:
+///   d6  → 10+d6  and 15−d6
+///   d8  → 10+d8  and 15−d8
+///   d10 →  8+d10 and 17−d10
+/// Because each formula is `k + die` paired with `(k+die_max+1) − die`, every
+/// pair always sums to 25 regardless of what is rolled.
 pub fn roll_3up_3down(rng: &mut impl Rng) -> [u32; 6] {
     let d6 = rng.random_range(1..=6u32);
     let d8 = rng.random_range(1..=8u32);

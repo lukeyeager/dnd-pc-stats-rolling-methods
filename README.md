@@ -25,14 +25,14 @@ cargo run -- once <method>  # roll once with a given method
 | Name | Description |
 |---|---|
 | `stdarr` | Standard array: fixed values 15/14/13/12/10/8, no randomness |
-| `roll3` | 3d6 straight |
+| `roll3` | Roll 3d6 and add them together; repeat 6 times for 6 stats |
 | `roll4` | 4d6, drop the lowest die |
 | `roll3_reroll_under8` | 3d6, reroll the whole stat once if it's below 8 |
 | `roll3_reroll_1s` | 3d6, reroll each die that shows a 1 (once) |
 | `roll3_1s_are_6s` | 3d6, treat any 1 as a 6 |
 | `roll18` | Roll 18d6, keep the top 18, group into 6 stats of 3 |
 | `roll24` | Same as roll18 but with 24 dice |
-| `3up3down` | Three paired stats: one goes up, one goes down, using d6/d8/d10 |
+| `3up3down` | Roll a d6, d8, and d10; each die produces one high and one low stat. Pair formulas: `10+d6` & `15−d6`, `10+d8` & `15−d8`, `8+d10` & `17−d10`. |
 | `6x6gridMax` | Roll a 6×6 grid of 3d6 values; pick the best row/col/diagonal by lex-max (highest top stat) |
 | `6x6gridTotal` | Same grid, but pick the array with the highest total sum |
 | `6x6grid4d6` | Same lex-max grid, but each cell is rolled with 4d6-drop-lowest |
