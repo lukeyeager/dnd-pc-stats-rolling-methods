@@ -174,10 +174,12 @@ fn action_stats(iters: u32) {
         let avg_max = avg_values.iter().cloned().fold(f64::MIN, f64::max);
         let avg_range = avg_max - avg_min;
 
+        let max_name_len = method_names.iter().map(|n| n.len()).max().unwrap_or(0);
         println!("> averages");
         for (name, &v) in method_names.iter().zip(&avg_values) {
             let ratio = if avg_range > 0.0 { (v - avg_min) / avg_range } else { 0.5 };
-            println!("{}: {}", name, colorize_avg(&format!("{:.2}", v), ratio));
+            let padded = format!("{:5.2}", v);
+            println!("{name}:{:width$}{}", "", colorize_avg(&padded, ratio), width = max_name_len - name.len() + 2);
         }
         println!();
 
