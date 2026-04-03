@@ -1,7 +1,7 @@
 mod methods;
 
 use clap::{Parser, Subcommand};
-use methods::{METHOD_NAMES, roll_method};
+use methods::{roll_method, METHOD_NAMES};
 use std::collections::HashMap;
 use yansi::Paint;
 
@@ -182,7 +182,7 @@ fn action_stats(iters: u32) {
         let avg_range = avg_max - avg_min;
 
         let max_name_len = method_names.iter().map(|n| n.len()).max().unwrap_or(0);
-        println!("> averages");
+        println!("> averages for {} by method", field);
         for (name, &v) in method_names.iter().zip(&avg_values) {
             let ratio = if avg_range > 0.0 {
                 (v - avg_min) / avg_range
