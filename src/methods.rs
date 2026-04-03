@@ -150,8 +150,8 @@ pub fn roll_grid_4d6(rng: &mut impl Rng) -> [u32; 6] {
 
 pub const METHOD_NAMES: &[&str] = &[
     "stdarr",
-    "roll3",
-    "roll4",
+    "3d6",
+    "4d6",
     "roll3_reroll_under8",
     "roll3_reroll_1s",
     "roll3_1s_are_6s",
@@ -166,8 +166,8 @@ pub const METHOD_NAMES: &[&str] = &[
 pub fn roll_method(method: &str, rng: &mut impl Rng) -> [u32; 6] {
     match method {
         "stdarr" => standard_array(rng),
-        "roll3" => roll6_3d6(rng),
-        "roll4" => roll6_4d6_drop_low(rng),
+        "3d6" => roll6_3d6(rng),
+        "4d6" => roll6_4d6_drop_low(rng),
         "roll3_reroll_under8" => roll6_3d6_reroll_under8(rng),
         "roll3_reroll_1s" => roll6_3d6_reroll_1s(rng),
         "roll3_1s_are_6s" => roll6_3d6_ones_are_sixes(rng),

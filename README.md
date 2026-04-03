@@ -25,8 +25,8 @@ cargo run -- once <method>  # roll once with a given method
 | Name | Description |
 |---|---|
 | `stdarr` | Standard array: fixed values 15/14/13/12/10/8, no randomness |
-| `roll3` | Roll 3d6 and add them together; repeat 6 times for 6 stats |
-| `roll4` | 4d6, drop the lowest die |
+| `3d6` | Roll 3d6 and add them together; repeat 6 times for 6 stats |
+| `4d6` | 4d6, drop the lowest die |
 | `roll3_reroll_under8` | 3d6, reroll the whole stat once if it's below 8 |
 | `roll3_reroll_1s` | 3d6, reroll each die that shows a 1 (once) |
 | `roll3_1s_are_6s` | 3d6, treat any 1 as a 6 |
@@ -45,8 +45,8 @@ Average stat value by sorted position across 10,000 simulated characters.
 ```
 method                  all    top1    top2    top3    top4    top5    top6
 stdarr                12.00   15.00   14.00   13.00   12.00   10.00    8.00
-roll3                 10.48   14.20   12.45   11.11    9.87    8.54    6.73
-roll4                 12.25   15.68   14.19   12.97   11.76   10.41    8.49
+3d6                   10.48   14.20   12.45   11.11    9.87    8.54    6.73
+4d6                   12.25   15.68   14.19   12.97   11.76   10.41    8.49
 roll3_reroll_under8   11.22   14.50   12.83   11.62   10.56    9.54    8.29
 roll3_reroll_1s       11.74   14.95   13.43   12.28   11.22   10.07    8.49
 roll3_1s_are_6s       13.01   16.15   14.74   13.61   12.53   11.34    9.69

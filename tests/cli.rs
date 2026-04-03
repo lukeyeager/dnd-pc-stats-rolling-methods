@@ -14,8 +14,8 @@ fn list_outputs_all_methods() {
 
     let expected = [
         "stdarr",
-        "roll3",
-        "roll4",
+        "3d6",
+        "4d6",
         "roll3_reroll_under8",
         "roll3_reroll_1s",
         "roll3_1s_are_6s",
@@ -34,8 +34,8 @@ fn list_outputs_all_methods() {
 fn once_succeeds_for_each_method() {
     let methods = [
         "stdarr",
-        "roll3",
-        "roll4",
+        "3d6",
+        "4d6",
         "roll3_reroll_under8",
         "roll3_reroll_1s",
         "roll3_1s_are_6s",
