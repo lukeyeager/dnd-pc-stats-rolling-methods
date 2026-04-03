@@ -33,6 +33,7 @@ cargo run -- once <method>  # roll once with a given method
 | `roll18` | Roll 18d6, keep the top 18, group into 6 stats of 3 |
 | `roll24` | Same as roll18 but with 24 dice |
 | `3up3down` | Roll a d6, d8, and d10; each die produces one high and one low stat. Pair formulas: `10+d6` & `15−d6`, `10+d8` & `15−d8`, `8+d10` & `17−d10`. |
+| `tictactoe` | Roll a 3×3 grid of 4d6-drop-lowest values; pick one row and one column (intersection counts in both) for 6 stats, choosing the best of all 9 combinations |
 | `6x6gridMax` | Roll a 6×6 grid of 3d6 values; pick the best row/col/diagonal by lex-max (highest top stat) |
 | `6x6gridTotal` | Same grid, but pick the array with the highest total sum |
 | `6x6grid4d6` | Same lex-max grid, but each cell is rolled with 4d6-drop-lowest |

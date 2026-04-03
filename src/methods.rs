@@ -122,6 +122,27 @@ fn pick_max_total(arrays: Vec<Vec<u32>>) -> [u32; 6] {
         .unwrap()
 }
 
+/// Roll a 3×3 grid of 4d6-drop-lowest values. The player picks one row and one
+/// column; all 3 row values plus all 3 column values become the 6 stats (the
+/// intersection cell is shared and counts in both). We try all 9 (row, col)
+/// combinations and return the lexicographically best result.
+pub fn roll_tictactoe(rng: &mut impl Rng) -> [u32; 6] {
+    let grid: [[u32; 3]; 3] =
+        std::array::from_fn(|_| std::array::from_fn(|_| roll_4d6_drop_low(rng)));
+    let arrays: Vec<Vec<u32>> = (0..3)
+        .flat_map(|row| {
+            (0..3).map(move |col| {
+                let mut stats: Vec<u32> = grid[row].to_vec();
+                for r in 0..3 {
+                    stats.push(grid[r][col]);
+                }
+                stats
+            })
+        })
+        .collect();
+    pick_lex_max(arrays)
+}
+
 /// Roll a 6x6 grid of 3d6 values, build all 14 arrays (rows/cols/diagonals),
 /// sort each descending, and return the lexicographically greatest one.
 /// This models a party picking the best available stat array from the grid.
@@ -158,6 +179,7 @@ pub const METHOD_NAMES: &[&str] = &[
     "roll18",
     "roll24",
     "3up3down",
+    "tictactoe",
     "6x6gridMax",
     "6x6gridTotal",
     "6x6grid4d6",
@@ -174,6 +196,7 @@ pub fn roll_method(method: &str, rng: &mut impl Rng) -> [u32; 6] {
         "roll18" => roll_many_sort::<18>(rng),
         "roll24" => roll_many_sort::<24>(rng),
         "3up3down" => roll_3up_3down(rng),
+        "tictactoe" => roll_tictactoe(rng),
         "6x6gridMax" => roll_grid(rng),
         "6x6gridTotal" => roll_grid_total(rng),
         "6x6grid4d6" => roll_grid_4d6(rng),
