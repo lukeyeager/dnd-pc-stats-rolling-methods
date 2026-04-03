@@ -16,7 +16,11 @@ fn roll_4d6_drop_low(rng: &mut impl Rng) -> u32 {
 /// 3d6, reroll the whole result once if it's below 8.
 fn roll_3d6_reroll_under8(rng: &mut impl Rng) -> u32 {
     let x = roll_3d6(rng);
-    if x < 8 { roll_3d6(rng) } else { x }
+    if x < 8 {
+        roll_3d6(rng)
+    } else {
+        x
+    }
 }
 
 /// 3d6, but each die that rolls a 1 is rerolled once.
@@ -24,7 +28,11 @@ fn roll_3d6_reroll_1s(rng: &mut impl Rng) -> u32 {
     (0..3)
         .map(|_| {
             let d = rng.random_range(1..=6);
-            if d == 1 { rng.random_range(1..=6) } else { d }
+            if d == 1 {
+                rng.random_range(1..=6)
+            } else {
+                d
+            }
         })
         .sum()
 }
@@ -34,7 +42,11 @@ fn roll_3d6_ones_are_sixes(rng: &mut impl Rng) -> u32 {
     (0..3)
         .map(|_| {
             let d = rng.random_range(1..=6);
-            if d == 1 { 6 } else { d }
+            if d == 1 {
+                6
+            } else {
+                d
+            }
         })
         .sum()
 }
@@ -167,14 +179,6 @@ pub fn roll_grid_total(rng: &mut impl Rng) -> [u32; 6] {
     pick_max_total(grid_to_arrays(&grid))
 }
 
-/// Same as 6x6grid but each cell is rolled with 4d6-drop-lowest instead of 3d6.
-pub fn roll_grid_4d6(rng: &mut impl Rng) -> [u32; 6] {
-    let grid: Vec<Vec<u32>> = (0..6)
-        .map(|_| (0..6).map(|_| roll_4d6_drop_low(rng)).collect())
-        .collect();
-    pick_lex_max(grid_to_arrays(&grid))
-}
-
 pub const METHOD_NAMES: &[&str] = &[
     "stdarr",
     "3d6",
@@ -188,7 +192,6 @@ pub const METHOD_NAMES: &[&str] = &[
     "tictactoe",
     "6x6gridMax",
     "6x6gridTotal",
-    "6x6grid4d6",
 ];
 
 pub fn roll_method(method: &str, rng: &mut impl Rng) -> [u32; 6] {
@@ -205,7 +208,6 @@ pub fn roll_method(method: &str, rng: &mut impl Rng) -> [u32; 6] {
         "tictactoe" => roll_tictactoe(rng),
         "6x6gridMax" => roll_grid(rng),
         "6x6gridTotal" => roll_grid_total(rng),
-        "6x6grid4d6" => roll_grid_4d6(rng),
         _ => panic!("unknown method: {}", method),
     }
 }

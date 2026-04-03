@@ -25,7 +25,6 @@ fn list_outputs_all_methods() {
         "tictactoe",
         "6x6gridMax",
         "6x6gridTotal",
-        "6x6grid4d6",
     ];
 
     assert_eq!(lines, expected, "list output doesn't match METHOD_NAMES");
@@ -46,7 +45,6 @@ fn once_succeeds_for_each_method() {
         "tictactoe",
         "6x6gridMax",
         "6x6gridTotal",
-        "6x6grid4d6",
     ];
 
     for method in methods {
@@ -70,16 +68,6 @@ fn once_succeeds_for_each_method() {
 fn once_6x6grid_total_succeeds() {
     let output = bin()
         .args(["once", "6x6gridTotal"])
-        .output()
-        .expect("failed to run");
-    assert!(output.status.success());
-    assert!(!output.stdout.is_empty());
-}
-
-#[test]
-fn once_6x6grid_4d6_succeeds() {
-    let output = bin()
-        .args(["once", "6x6grid4d6"])
         .output()
         .expect("failed to run");
     assert!(output.status.success());
