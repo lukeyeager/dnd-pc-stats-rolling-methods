@@ -1,7 +1,7 @@
 mod methods;
 
 use clap::{Parser, Subcommand};
-use colored::Colorize;
+use yansi::Paint;
 use methods::{METHOD_NAMES, roll_method};
 use std::collections::HashMap;
 
@@ -30,34 +30,31 @@ enum Command {
 // --- Color helpers ---
 // IMPORTANT: always pass an already-padded string so ANSI codes don't affect alignment.
 
-/// Smooth viridis gradient via linear interpolation between canonical anchor points.
-/// Returns (r, g, b) for any ratio in [0, 1].
-fn viridis(ratio: f64) -> (u8, u8, u8) {
-    const STOPS: &[(u8, u8, u8)] = &[
-        ( 68,   1,  84), // 0.00 — dark purple
-        ( 59,  82, 139), // 0.25 — blue
-        ( 33, 145, 140), // 0.50 — teal
-        ( 94, 201,  98), // 0.75 — green
-        (253, 231,  37), // 1.00 — yellow
+/// Viridis-tracing xterm-256 indices, dark purple → blue → teal → green → yellow.
+fn viridis(ratio: f64) -> u8 {
+    const STOPS: &[u8] = &[
+         53,  // (95,   0,  95) dark purple
+         55,  // (95,   0, 175) purple
+         61,  // (95,  95, 175) blue-purple
+         25,  // ( 0,  95, 175) blue
+         31,  // ( 0, 135, 175) blue-teal
+         30,  // ( 0, 135, 135) teal
+         36,  // ( 0, 175, 135) teal-green
+         71,  // (95, 175,  95) green
+         76,  // (95, 215,   0) yellow-green
+        148,  // (175,215,   0) lime
+        220,  // (255,215,   0) yellow
     ];
-    let ratio = ratio.clamp(0.0, 1.0);
-    let scaled = ratio * (STOPS.len() - 1) as f64;
-    let i = (scaled as usize).min(STOPS.len() - 2);
-    let frac = scaled - i as f64;
-    let (r0, g0, b0) = STOPS[i];
-    let (r1, g1, b1) = STOPS[i + 1];
-    let lerp = |a: u8, b: u8| (a as f64 + frac * (b as f64 - a as f64)).round() as u8;
-    (lerp(r0, r1), lerp(g0, g1), lerp(b0, b1))
+    let i = (ratio.clamp(0.0, 1.0) * (STOPS.len() - 1) as f64).round() as usize;
+    STOPS[i.min(STOPS.len() - 1)]
 }
 
 fn colorize_pct(s: &str, ratio: f64) -> String {
-    let (r, g, b) = viridis(ratio);
-    s.truecolor(r, g, b).to_string()
+    s.fixed(viridis(ratio)).to_string()
 }
 
 fn colorize_avg(s: &str, ratio: f64) -> String {
-    let (r, g, b) = viridis(ratio);
-    s.truecolor(r, g, b).to_string()
+    s.fixed(viridis(ratio)).to_string()
 }
 
 // --- Actions ---
