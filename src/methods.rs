@@ -181,17 +181,17 @@ pub fn roll_grid_total(rng: &mut impl Rng) -> [u32; 6] {
 
 pub const METHOD_NAMES: &[&str] = &[
     "stdarr",
-    "3d6",
     "4d6",
+    "3d6",
+    "tictactoe",
+    "6x6gridMax",
+    "6x6gridTotal",
     "roll3_reroll_under8",
     "roll3_reroll_1s",
     "roll3_1s_are_6s",
     "roll18",
     "roll24",
     "3up3down",
-    "tictactoe",
-    "6x6gridMax",
-    "6x6gridTotal",
 ];
 
 pub fn roll_method(method: &str, rng: &mut impl Rng) -> [u32; 6] {
