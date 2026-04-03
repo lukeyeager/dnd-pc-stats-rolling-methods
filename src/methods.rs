@@ -104,7 +104,10 @@ fn grid_to_arrays(grid: &[Vec<u32>]) -> Vec<Vec<u32>> {
 fn pick_lex_max(arrays: Vec<Vec<u32>>) -> [u32; 6] {
     arrays
         .into_iter()
-        .map(|mut a| { a.sort_unstable_by(|x, y| y.cmp(x)); a })
+        .map(|mut a| {
+            a.sort_unstable_by(|x, y| y.cmp(x));
+            a
+        })
         .max()
         .unwrap()
         .try_into()
@@ -115,7 +118,10 @@ fn pick_lex_max(arrays: Vec<Vec<u32>>) -> [u32; 6] {
 fn pick_max_total(arrays: Vec<Vec<u32>>) -> [u32; 6] {
     arrays
         .into_iter()
-        .map(|mut a| { a.sort_unstable_by(|x, y| y.cmp(x)); a })
+        .map(|mut a| {
+            a.sort_unstable_by(|x, y| y.cmp(x));
+            a
+        })
         .max_by_key(|a| a.iter().sum::<u32>())
         .unwrap()
         .try_into()

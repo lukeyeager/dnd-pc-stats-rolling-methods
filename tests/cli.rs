@@ -68,14 +68,20 @@ fn once_succeeds_for_each_method() {
 
 #[test]
 fn once_6x6grid_total_succeeds() {
-    let output = bin().args(["once", "6x6gridTotal"]).output().expect("failed to run");
+    let output = bin()
+        .args(["once", "6x6gridTotal"])
+        .output()
+        .expect("failed to run");
     assert!(output.status.success());
     assert!(!output.stdout.is_empty());
 }
 
 #[test]
 fn once_6x6grid_4d6_succeeds() {
-    let output = bin().args(["once", "6x6grid4d6"]).output().expect("failed to run");
+    let output = bin()
+        .args(["once", "6x6grid4d6"])
+        .output()
+        .expect("failed to run");
     assert!(output.status.success());
     assert!(!output.stdout.is_empty());
 }
@@ -86,6 +92,10 @@ fn stats_succeeds() {
         .args(["stats", "--iters", "100"])
         .output()
         .expect("failed to run");
-    assert!(output.status.success(), "stats exited with status {}", output.status);
+    assert!(
+        output.status.success(),
+        "stats exited with status {}",
+        output.status
+    );
     assert!(!output.stdout.is_empty(), "stats produced no output");
 }

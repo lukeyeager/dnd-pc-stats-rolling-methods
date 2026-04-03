@@ -1,9 +1,9 @@
 mod methods;
 
 use clap::{Parser, Subcommand};
-use yansi::Paint;
 use methods::{METHOD_NAMES, roll_method};
 use std::collections::HashMap;
+use yansi::Paint;
 
 // --- CLI ---
 
@@ -33,17 +33,17 @@ enum Command {
 /// Viridis-tracing xterm-256 indices, dark purple → blue → teal → green → yellow.
 fn viridis(ratio: f64) -> u8 {
     const STOPS: &[u8] = &[
-         53,  // (95,   0,  95) dark purple
-         55,  // (95,   0, 175) purple
-         61,  // (95,  95, 175) blue-purple
-         25,  // ( 0,  95, 175) blue
-         31,  // ( 0, 135, 175) blue-teal
-         30,  // ( 0, 135, 135) teal
-         36,  // ( 0, 175, 135) teal-green
-         71,  // (95, 175,  95) green
-         76,  // (95, 215,   0) yellow-green
-        148,  // (175,215,   0) lime
-        220,  // (255,215,   0) yellow
+        53,  // (95,   0,  95) dark purple
+        55,  // (95,   0, 175) purple
+        61,  // (95,  95, 175) blue-purple
+        25,  // ( 0,  95, 175) blue
+        31,  // ( 0, 135, 175) blue-teal
+        30,  // ( 0, 135, 135) teal
+        36,  // ( 0, 175, 135) teal-green
+        71,  // (95, 175,  95) green
+        76,  // (95, 215,   0) yellow-green
+        148, // (175,215,   0) lime
+        220, // (255,215,   0) yellow
     ];
     let i = (ratio.clamp(0.0, 1.0) * (STOPS.len() - 1) as f64).round() as usize;
     STOPS[i.min(STOPS.len() - 1)]
@@ -108,7 +108,10 @@ fn action_stats(iters: u32) {
     let method_names: Vec<&str> = all_stats.iter().map(|ms| ms.name).collect();
 
     // Column width = max(method name length, PCT_WIDTH) so headers and values align.
-    let col_widths: Vec<usize> = method_names.iter().map(|n| n.len().max(PCT_WIDTH)).collect();
+    let col_widths: Vec<usize> = method_names
+        .iter()
+        .map(|n| n.len().max(PCT_WIDTH))
+        .collect();
 
     // Collect raw averages for the summary table (must stay uncolored until print time).
     let mut summary_avgs: Vec<Vec<f64>> = Vec::new();
@@ -133,7 +136,11 @@ fn action_stats(iters: u32) {
             })
             .collect();
 
-        let grid_max: f64 = pct_grid.iter().flat_map(|row| row.iter()).cloned().fold(0.0_f64, f64::max);
+        let grid_max: f64 = pct_grid
+            .iter()
+            .flat_map(|row| row.iter())
+            .cloned()
+            .fold(0.0_f64, f64::max);
 
         // Header
         let header_cols: Vec<String> = method_names
@@ -177,9 +184,18 @@ fn action_stats(iters: u32) {
         let max_name_len = method_names.iter().map(|n| n.len()).max().unwrap_or(0);
         println!("> averages");
         for (name, &v) in method_names.iter().zip(&avg_values) {
-            let ratio = if avg_range > 0.0 { (v - avg_min) / avg_range } else { 0.5 };
+            let ratio = if avg_range > 0.0 {
+                (v - avg_min) / avg_range
+            } else {
+                0.5
+            };
             let padded = format!("{:5.2}", v);
-            println!("{name}:{:width$}{}", "", colorize_avg(&padded, ratio), width = max_name_len - name.len() + 2);
+            println!(
+                "{name}:{:width$}{}",
+                "",
+                colorize_avg(&padded, ratio),
+                width = max_name_len - name.len() + 2
+            );
         }
         println!();
 
@@ -195,10 +211,20 @@ fn action_stats(iters: u32) {
         .map(|(name, &w)| format!("{:>w$}", name))
         .collect();
     println!(">>> summary avgs");
-    println!("{:width$}{}{}", "method", SEP, header_cols.join(SEP), width = method_col_width);
+    println!(
+        "{:width$}{}{}",
+        "method",
+        SEP,
+        header_cols.join(SEP),
+        width = method_col_width
+    );
 
-    let col_mins: Vec<f64> = (0..field_names.len()).map(|fi| summary_avgs[fi].iter().cloned().fold(f64::MAX, f64::min)).collect();
-    let col_maxs: Vec<f64> = (0..field_names.len()).map(|fi| summary_avgs[fi].iter().cloned().fold(f64::MIN, f64::max)).collect();
+    let col_mins: Vec<f64> = (0..field_names.len())
+        .map(|fi| summary_avgs[fi].iter().cloned().fold(f64::MAX, f64::min))
+        .collect();
+    let col_maxs: Vec<f64> = (0..field_names.len())
+        .map(|fi| summary_avgs[fi].iter().cloned().fold(f64::MIN, f64::max))
+        .collect();
 
     for (mi, &method) in method_names.iter().enumerate() {
         let values: Vec<String> = (0..field_names.len())
@@ -206,12 +232,22 @@ fn action_stats(iters: u32) {
             .map(|(fi, &w)| {
                 let v = summary_avgs[fi][mi];
                 let range = col_maxs[fi] - col_mins[fi];
-                let ratio = if range > 0.0 { (v - col_mins[fi]) / range } else { 0.5 };
+                let ratio = if range > 0.0 {
+                    (v - col_mins[fi]) / range
+                } else {
+                    0.5
+                };
                 let padded = format!("{:>w$.2}", v);
                 colorize_avg(&padded, ratio)
             })
             .collect();
-        println!("{:width$}{}{}", method, SEP, values.join(SEP), width = method_col_width);
+        println!(
+            "{:width$}{}{}",
+            method,
+            SEP,
+            values.join(SEP),
+            width = method_col_width
+        );
     }
 }
 
