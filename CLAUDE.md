@@ -28,3 +28,13 @@ Never use debug builds to verify simulation output; the timing difference is sig
 - **Normalization**: Heatmap colors are normalized per-column (each column scaled to its own min/max). Global normalization makes columns with naturally different ranges hard to compare visually.
 - **Terminal color**: Uses `yansi` for xterm-256 color (`Color::Fixed(u8)`). The `colored` crate does not support 256-color — do not switch back to it. Truecolor (`--truecolor`) is not assumed.
 - **Adding rolling methods**: New methods go in `src/methods.rs`. Register them in `METHOD_NAMES` and add a match arm in `roll_method`. The stats harness in `main.rs` picks them up automatically.
+
+## Tests
+
+Integration tests are in `tests/cli.rs` and invoke the compiled binary via `CARGO_BIN_EXE_dnd_stats`. Run them with:
+
+```
+cargo test --release
+```
+
+The tests verify: `list` output matches `METHOD_NAMES` exactly, `once <method>` succeeds for every method, and `stats --iters 100` completes successfully. The `list` test acts as a guard against `METHOD_NAMES` and `roll_method` falling out of sync when adding new methods.
