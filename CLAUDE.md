@@ -1,5 +1,11 @@
 # D&D Stat Rolling Analyzer
 
+
+TODO list for when I have more claude code credits:
+* Re-order the methods: first standard array and 4d6 and 3d6 (the classics), then from simplest to most complicated
+* Update the README results table - it's missing tictactoe currently
+
+
 This project analyzes different methods for rolling ability scores in D&D characters via repeated simulation experiments.
 
 ## Language
