@@ -30,35 +30,34 @@ enum Command {
 // --- Color helpers ---
 // IMPORTANT: always pass an already-padded string so ANSI codes don't affect alignment.
 
-/// Heat-map color for a percentage, relative to the column's peak value.
-/// dim → blue → cyan → yellow → bright red as the value rises toward the column peak.
-fn colorize_pct(s: &str, ratio: f64) -> String {
-    if ratio < 0.2 {
-        s.dimmed().to_string()
-    } else if ratio < 0.4 {
-        s.blue().to_string()
-    } else if ratio < 0.6 {
-        s.cyan().to_string()
-    } else if ratio < 0.8 {
-        s.yellow().to_string()
-    } else {
-        s.bright_red().to_string()
-    }
+/// Smooth viridis gradient via linear interpolation between canonical anchor points.
+/// Returns (r, g, b) for any ratio in [0, 1].
+fn viridis(ratio: f64) -> (u8, u8, u8) {
+    const STOPS: &[(u8, u8, u8)] = &[
+        ( 68,   1,  84), // 0.00 — dark purple
+        ( 59,  82, 139), // 0.25 — blue
+        ( 33, 145, 140), // 0.50 — teal
+        ( 94, 201,  98), // 0.75 — green
+        (253, 231,  37), // 1.00 — yellow
+    ];
+    let ratio = ratio.clamp(0.0, 1.0);
+    let scaled = ratio * (STOPS.len() - 1) as f64;
+    let i = (scaled as usize).min(STOPS.len() - 2);
+    let frac = scaled - i as f64;
+    let (r0, g0, b0) = STOPS[i];
+    let (r1, g1, b1) = STOPS[i + 1];
+    let lerp = |a: u8, b: u8| (a as f64 + frac * (b as f64 - a as f64)).round() as u8;
+    (lerp(r0, r1), lerp(g0, g1), lerp(b0, b1))
 }
 
-/// Color an average value relative to the range [min, max] across all methods.
+fn colorize_pct(s: &str, ratio: f64) -> String {
+    let (r, g, b) = viridis(ratio);
+    s.truecolor(r, g, b).to_string()
+}
+
 fn colorize_avg(s: &str, ratio: f64) -> String {
-    if ratio < 0.2 {
-        s.blue().to_string()
-    } else if ratio < 0.4 {
-        s.cyan().to_string()
-    } else if ratio < 0.6 {
-        s.white().to_string()
-    } else if ratio < 0.8 {
-        s.yellow().to_string()
-    } else {
-        s.bright_red().to_string()
-    }
+    let (r, g, b) = viridis(ratio);
+    s.truecolor(r, g, b).to_string()
 }
 
 // --- Actions ---
@@ -123,7 +122,7 @@ fn action_stats(iters: u32) {
             .map(|ms| ms.counters[fi].values().sum())
             .collect();
 
-        // Pre-compute all pct values so we can find per-column maxes for normalization.
+        // Pre-compute all pct values so we can find the global max for normalization.
         let pct_grid: Vec<Vec<f64>> = (3u32..=18)
             .map(|s| {
                 all_stats
@@ -137,9 +136,7 @@ fn action_stats(iters: u32) {
             })
             .collect();
 
-        let col_maxes: Vec<f64> = (0..all_stats.len())
-            .map(|i| pct_grid.iter().map(|row| row[i]).fold(0.0_f64, f64::max))
-            .collect();
+        let grid_max: f64 = pct_grid.iter().flat_map(|row| row.iter()).cloned().fold(0.0_f64, f64::max);
 
         // Header
         let header_cols: Vec<String> = method_names
@@ -153,11 +150,11 @@ fn action_stats(iters: u32) {
         for (row_idx, s) in (3u32..=18).enumerate() {
             let values: Vec<String> = pct_grid[row_idx]
                 .iter()
-                .enumerate()
-                .map(|(i, &pct)| {
-                    let ratio = if col_maxes[i] > 0.0 { pct / col_maxes[i] } else { 0.0 };
+                .zip(&col_widths)
+                .map(|(&pct, &w)| {
+                    let ratio = if grid_max > 0.0 { pct / grid_max } else { 0.0 };
                     // Pad first, then colorize so ANSI codes don't affect column width.
-                    let padded = format!("{:>width$.2}", pct, width = col_widths[i]);
+                    let padded = format!("{:>w$.2}", pct);
                     colorize_pct(&padded, ratio)
                 })
                 .collect();
