@@ -12,15 +12,13 @@ Compare different stat-rolling methods (e.g. 3d6 straight, 4d6 drop lowest, 2d6+
 
 ## Building and Running
 
-Always build and run in **release mode** — simulation loops run orders of magnitude faster:
-
 ```
-cargo build --release
-cargo run --release -- stats
-cargo run --release -- stats --iters 100000
+cargo build
+cargo run -- stats
+cargo run -- stats --iters 100000
 ```
 
-Never use debug builds to verify simulation output; the timing difference is significant enough to matter during development.
+The dev profile is configured with `opt-level = 3` (see `Cargo.toml`), so plain `cargo build/run/test` is always fully optimized.
 
 ## Code Guidelines
 
@@ -34,7 +32,7 @@ Never use debug builds to verify simulation output; the timing difference is sig
 Integration tests are in `tests/cli.rs` and invoke the compiled binary via `CARGO_BIN_EXE_dnd_stats`. Run them with:
 
 ```
-cargo test --release
+cargo test
 ```
 
 The tests verify: `list` output matches `METHOD_NAMES` exactly, `once <method>` succeeds for every method, and `stats --iters 100` completes successfully. The `list` test acts as a guard against `METHOD_NAMES` and `roll_method` falling out of sync when adding new methods.

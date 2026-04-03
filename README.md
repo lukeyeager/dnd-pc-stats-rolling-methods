@@ -5,19 +5,19 @@ compares the resulting distributions.
 
 ## Building & Running
 
-Always use release mode — the simulation loops are orders of magnitude faster:
+The dev profile is configured with `opt-level = 3`, so plain `cargo build/run/test` is always fully optimized — no `--release` flag needed.
 
 ```
-cargo build --release
-cargo run --release -- stats
-cargo run --release -- stats --iters 100000
+cargo build
+cargo run -- stats
+cargo run -- stats --iters 100000
 ```
 
 Other commands:
 
 ```
-cargo run --release -- list           # list all available methods
-cargo run --release -- once <method>  # roll once with a given method
+cargo run -- list           # list all available methods
+cargo run -- once <method>  # roll once with a given method
 ```
 
 ## Rolling Methods
@@ -66,5 +66,5 @@ a match arm in `roll_method`. The stats harness picks them up automatically.
 ## Tests
 
 ```
-cargo test --release
+cargo test
 ```
