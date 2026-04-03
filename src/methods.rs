@@ -83,14 +83,8 @@ pub fn roll_3up_3down(rng: &mut impl Rng) -> [u32; 6] {
     [10 + d6, 15 - d6, 10 + d8, 15 - d8, 8 + d10, 17 - d10]
 }
 
-/// Roll a 6x6 grid of 3d6 values, build all 14 arrays (rows/cols/diagonals),
-/// sort each descending, and return the lexicographically greatest one.
-/// This models a party picking the best available stat array from the grid.
-pub fn roll_grid(rng: &mut impl Rng) -> [u32; 6] {
-    let grid: Vec<Vec<u32>> = (0..6)
-        .map(|_| (0..6).map(|_| roll_3d6(rng)).collect())
-        .collect();
-
+/// Extract all 14 stat arrays (6 rows, 6 cols, 2 diagonals) from a 6×6 grid.
+fn grid_to_arrays(grid: &[Vec<u32>]) -> Vec<Vec<u32>> {
     let mut arrays: Vec<Vec<u32>> = Vec::new();
     for i in 0..6 {
         arrays.push(grid[i].clone());
@@ -98,19 +92,56 @@ pub fn roll_grid(rng: &mut impl Rng) -> [u32; 6] {
     }
     arrays.push((0..6).map(|i| grid[i][i]).collect());
     arrays.push((0..6).map(|i| grid[i][5 - i]).collect());
+    arrays
+}
 
-    // Sort each array descending, then pick the lexicographically greatest.
-    // This prioritises: highest top stat, then highest 2nd stat as tiebreaker, etc.
+/// Sort each array descending, then pick the lexicographically greatest
+/// (prioritises highest top stat, then 2nd stat as tiebreaker, etc.).
+fn pick_lex_max(arrays: Vec<Vec<u32>>) -> [u32; 6] {
     arrays
         .into_iter()
-        .map(|mut a| {
-            a.sort_unstable_by(|x, y| y.cmp(x));
-            a
-        })
+        .map(|mut a| { a.sort_unstable_by(|x, y| y.cmp(x)); a })
         .max()
         .unwrap()
         .try_into()
         .unwrap()
+}
+
+/// Sort each array descending, then pick the one with the highest total sum.
+fn pick_max_total(arrays: Vec<Vec<u32>>) -> [u32; 6] {
+    arrays
+        .into_iter()
+        .map(|mut a| { a.sort_unstable_by(|x, y| y.cmp(x)); a })
+        .max_by_key(|a| a.iter().sum::<u32>())
+        .unwrap()
+        .try_into()
+        .unwrap()
+}
+
+/// Roll a 6x6 grid of 3d6 values, build all 14 arrays (rows/cols/diagonals),
+/// sort each descending, and return the lexicographically greatest one.
+/// This models a party picking the best available stat array from the grid.
+pub fn roll_grid(rng: &mut impl Rng) -> [u32; 6] {
+    let grid: Vec<Vec<u32>> = (0..6)
+        .map(|_| (0..6).map(|_| roll_3d6(rng)).collect())
+        .collect();
+    pick_lex_max(grid_to_arrays(&grid))
+}
+
+/// Same as 6x6grid but picks the array with the highest total rather than the best top stat.
+pub fn roll_grid_total(rng: &mut impl Rng) -> [u32; 6] {
+    let grid: Vec<Vec<u32>> = (0..6)
+        .map(|_| (0..6).map(|_| roll_3d6(rng)).collect())
+        .collect();
+    pick_max_total(grid_to_arrays(&grid))
+}
+
+/// Same as 6x6grid but each cell is rolled with 4d6-drop-lowest instead of 3d6.
+pub fn roll_grid_4d6(rng: &mut impl Rng) -> [u32; 6] {
+    let grid: Vec<Vec<u32>> = (0..6)
+        .map(|_| (0..6).map(|_| roll_4d6_drop_low(rng)).collect())
+        .collect();
+    pick_lex_max(grid_to_arrays(&grid))
 }
 
 pub const METHOD_NAMES: &[&str] = &[
@@ -123,7 +154,9 @@ pub const METHOD_NAMES: &[&str] = &[
     "roll18",
     "roll24",
     "3up3down",
-    "6x6grid",
+    "6x6gridMax",
+    "6x6gridTotal",
+    "6x6grid4d6",
 ];
 
 pub fn roll_method(method: &str, rng: &mut impl Rng) -> [u32; 6] {
@@ -137,7 +170,9 @@ pub fn roll_method(method: &str, rng: &mut impl Rng) -> [u32; 6] {
         "roll18" => roll_many_sort::<18>(rng),
         "roll24" => roll_many_sort::<24>(rng),
         "3up3down" => roll_3up_3down(rng),
-        "6x6grid" => roll_grid(rng),
+        "6x6gridMax" => roll_grid(rng),
+        "6x6gridTotal" => roll_grid_total(rng),
+        "6x6grid4d6" => roll_grid_4d6(rng),
         _ => panic!("unknown method: {}", method),
     }
 }
