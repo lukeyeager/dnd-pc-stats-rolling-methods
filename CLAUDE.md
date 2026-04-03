@@ -9,3 +9,22 @@ Code is written in **Rust**. We use large-scale repeated experiments (not mathem
 ## Project Goal
 
 Compare different stat-rolling methods (e.g. 3d6 straight, 4d6 drop lowest, 2d6+6, point buy equivalents, etc.) by simulating them many times and analyzing the resulting distributions.
+
+## Building and Running
+
+Always build and run in **release mode** — simulation loops run orders of magnitude faster:
+
+```
+cargo build --release
+cargo run --release -- stats
+cargo run --release -- stats --iters 100000
+```
+
+Never use debug builds to verify simulation output; the timing difference is significant enough to matter during development.
+
+## Code Guidelines
+
+- **Color helpers**: Always pad strings before colorizing. ANSI escape codes add invisible bytes that confuse Rust's format-width calculations — padding after colorizing will misalign columns.
+- **Normalization**: Heatmap colors are normalized per-column (each column scaled to its own min/max). Global normalization makes columns with naturally different ranges hard to compare visually.
+- **Terminal color**: Uses `yansi` for xterm-256 color (`Color::Fixed(u8)`). The `colored` crate does not support 256-color — do not switch back to it. Truecolor (`--truecolor`) is not assumed.
+- **Adding rolling methods**: New methods go in `src/methods.rs`. Register them in `METHOD_NAMES` and add a match arm in `roll_method`. The stats harness in `main.rs` picks them up automatically.
