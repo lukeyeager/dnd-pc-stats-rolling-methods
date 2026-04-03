@@ -3,23 +3,6 @@
 Simulates different D&D ability score generation methods millions of times and
 compares the resulting distributions.
 
-## Building & Running
-
-The dev profile is configured with `opt-level = 3`, so plain `cargo build/run/test` is always fully optimized — no `--release` flag needed.
-
-```
-cargo build
-cargo run -- stats
-cargo run -- stats --iters 100000
-```
-
-Other commands:
-
-```
-cargo run -- list           # list all available methods
-cargo run -- once <method>  # roll once with a given method
-```
-
 ## Rolling Methods
 
 | Name | Description |
@@ -63,6 +46,23 @@ roll24                12.60   17.69   15.92   13.73   11.58    9.41    7.25
 
 New methods go in `src/methods.rs`. Register the name in `METHOD_NAMES` and add
 a match arm in `roll_method`. The stats harness picks them up automatically.
+
+## Building & Running
+
+The dev profile is configured with `opt-level = 3`, so plain `cargo build/run/test` is always fully optimized — no `--release` flag needed.
+
+```
+cargo build
+cargo run -- stats
+cargo run -- stats --iters 100000
+```
+
+Other commands:
+
+```
+cargo run -- list           # list all available methods
+cargo run -- once <method>  # roll once with a given method
+```
 
 ## Tests
 
