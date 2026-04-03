@@ -186,32 +186,32 @@ fn action_stats(iters: u32) {
         summary_avgs.push(avg_values);
     }
 
-    // Summary table — re-color from raw values so alignment is correct.
-    let field_col_width = field_names.iter().map(|n| n.len()).max().unwrap();
-    let header_cols: Vec<String> = method_names
+    // Summary table (transposed) — rows=methods, cols=fields, per-row normalization.
+    let method_col_width = method_names.iter().map(|n| n.len()).max().unwrap();
+    let field_col_widths: Vec<usize> = field_names.iter().map(|n| n.len().max(PCT_WIDTH)).collect();
+    let header_cols: Vec<String> = field_names
         .iter()
-        .zip(&col_widths)
+        .zip(&field_col_widths)
         .map(|(name, &w)| format!("{:>w$}", name))
         .collect();
     println!(">>> summary avgs");
-    println!("{:width$}{}{}", "stat", SEP, header_cols.join(SEP), width = field_col_width);
+    println!("{:width$}{}{}", "method", SEP, header_cols.join(SEP), width = method_col_width);
 
-    for (fi, &field) in field_names.iter().enumerate() {
-        let avgs = &summary_avgs[fi];
-        let avg_min = avgs.iter().cloned().fold(f64::MAX, f64::min);
-        let avg_max = avgs.iter().cloned().fold(f64::MIN, f64::max);
-        let avg_range = avg_max - avg_min;
+    let col_mins: Vec<f64> = (0..field_names.len()).map(|fi| summary_avgs[fi].iter().cloned().fold(f64::MAX, f64::min)).collect();
+    let col_maxs: Vec<f64> = (0..field_names.len()).map(|fi| summary_avgs[fi].iter().cloned().fold(f64::MIN, f64::max)).collect();
 
-        let values: Vec<String> = avgs
-            .iter()
-            .zip(&col_widths)
-            .map(|(&v, &w)| {
-                let ratio = if avg_range > 0.0 { (v - avg_min) / avg_range } else { 0.5 };
+    for (mi, &method) in method_names.iter().enumerate() {
+        let values: Vec<String> = (0..field_names.len())
+            .zip(&field_col_widths)
+            .map(|(fi, &w)| {
+                let v = summary_avgs[fi][mi];
+                let range = col_maxs[fi] - col_mins[fi];
+                let ratio = if range > 0.0 { (v - col_mins[fi]) / range } else { 0.5 };
                 let padded = format!("{:>w$.2}", v);
                 colorize_avg(&padded, ratio)
             })
             .collect();
-        println!("{:width$}{}{}", field, SEP, values.join(SEP), width = field_col_width);
+        println!("{:width$}{}{}", method, SEP, values.join(SEP), width = method_col_width);
     }
 }
 
